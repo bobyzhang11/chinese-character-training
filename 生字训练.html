@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小学语文生字训练营 - 1-4年级</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        /* 设置面板 */
+        .settings-panel {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .settings-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .settings-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .settings-label {
+            font-weight: bold;
+            color: #555;
+            min-width: 80px;
+        }
+
+        .grade-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .grade-btn {
+            padding: 8px 20px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .grade-btn:hover, .grade-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-start:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-hint {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-hint:hover {
+            background: #e0a800;
+        }
+
+        .btn-next {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-next:hover {
+            background: #218838;
+        }
+
+        /* 练习区域 */
+        .practice-area {
+            background: #fff;
+            border: 3px solid #e9ecef;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            min-height: 300px;
+            display: none;
+        }
+
+        .practice-area.active {
+            display: block;
+        }
+
+        .progress-bar {
+            background: #e9ecef;
+            height: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            text-align: right;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .pinyin-display {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-weight: bold;
+            letter-spacing: 5px;
+        }
+
+        .quiz-display {
+            font-size: 40px;
+            color: #333;
+            margin-bottom: 20px;
+            letter-spacing: 8px;
+            line-height: 1.6;
+        }
+
+        .quiz-blank {
+            display: inline-block;
+            width: 52px;
+            height: 52px;
+            border: 3px dashed #667eea;
+            border-radius: 8px;
+            vertical-align: middle;
+            margin: 0 2px;
+            background: #f0f0ff;
+            position: relative;
+        }
+
+        .quiz-blank::after {
+            content: '?';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #667eea;
+            font-size: 24px;
+            font-weight: bold;
+            opacity: 0.4;
+        }
+
+        .quiz-blank.revealed {
+            border-style: solid;
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .quiz-blank.revealed::after {
+            content: attr(data-answer);
+            color: #28a745;
+            opacity: 1;
+        }
+
+        .quiz-blank.wrong-reveal {
+            border-style: solid;
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .quiz-blank.wrong-reveal::after {
+            content: attr(data-answer);
+            color: #dc3545;
+            opacity: 1;
+        }
+
+        .quiz-hint {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 20px;
+        }
+
+        .answer-input {
+            width: 200px;
+            height: 80px;
+            font-size: 48px;
+            text-align: center;
+            border: 3px solid #ddd;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .answer-input.correct {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .answer-input.wrong {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .hint-area {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .hint-area.show {
+            display: block;
+        }
+
+        .hint-text {
+            font-size: 24px;
+            color: #856404;
+        }
+
+        .word-info {
+            margin-top: 10px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* 结果显示 */
+        .result-area {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            display: none;
+        }
+
+        .result-area.active {
+            display: block;
+        }
+
+        .score-display {
+            font-size: 72px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .score-label {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .wrong-words {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .wrong-words h3 {
+            color: #dc3545;
+            margin-bottom: 10px;
+        }
+
+        .wrong-word-item {
+            display: inline-block;
+            background: #f8d7da;
+            color: #721c24;
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 16px;
+        }
+
+        /* 欢迎页面 */
+        .welcome-area {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .welcome-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .welcome-text {
+            font-size: 18px;
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .feature-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .feature-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .feature-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .feature-desc {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .pinyin-display {
+                font-size: 36px;
+            }
+
+            .quiz-display {
+                font-size: 32px;
+                letter-spacing: 5px;
+            }
+
+            .quiz-blank {
+                width: 42px;
+                height: 42px;
+            }
+
+            .quiz-blank::after {
+                font-size: 20px;
+            }
+
+            .answer-input {
+                width: 150px;
+                height: 60px;
+                font-size: 36px;
+            }
+
+            .settings-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        /* 动画 */
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .bounce {
+            animation: bounce 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        /* 成功提示 */
+        .success-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #28a745;
+            color: white;
+            padding: 20px 40px;
+            border-radius: 10px;
+            font-size: 24px;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .success-message.show {
+            display: block;
+            animation: bounce 0.5s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 小学语文生字训练营</h1>
+        <p class="subtitle">人教版1-4年级生字练习 | 组词填空写汉字</p>
+
+        <!-- 设置面板 -->
+        <div class="settings-panel">
+            <div class="settings-row">
+                <span class="settings-label">选择年级：</span>
+                <div class="grade-buttons">
+                    <button class="grade-btn" data-grade="1">一年级</button>
+                    <button class="grade-btn" data-grade="2">二年级</button>
+                    <button class="grade-btn" data-grade="3">三年级</button>
+                    <button class="grade-btn active" data-grade="4">四年级</button>
+                    <button class="grade-btn" data-grade="all">全部</button>
+                </div>
+            </div>
+            <div class="settings-row">
+                <span class="settings-label">题目数量：</span>
+                <select id="questionCount" style="padding: 8px 15px; border-radius: 20px; border: 2px solid #ddd;">
+                    <option value="10">10题</option>
+                    <option value="20" selected>20题</option>
+                    <option value="30">30题</option>
+                    <option value="50">50题</option>
+                </select>
+            </div>
+            <div class="settings-row">
+                <div class="action-buttons">
+                    <button class="action-btn btn-start" onclick="startPractice()">开始练习</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 欢迎页面 -->
+        <div class="welcome-area" id="welcomeArea">
+            <div class="welcome-icon">📚</div>
+            <div class="welcome-text">
+                欢迎来使用生字训练工具！<br>
+                这里收录了人教版小学1-4年级的全部生字<br>
+                通过拼音和组词填空的方式，帮助孩子巩固生字记忆
+            </div>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-title">分级练习</div>
+                    <div class="feature-desc">按年级选择，循序渐进</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🎮</div>
+                    <div class="feature-title">趣味练习</div>
+                    <div class="feature-desc">游戏化学习，不枯燥</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">成绩统计</div>
+                    <div class="feature-desc">实时反馈，查漏补缺</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">💡</div>
+                    <div class="feature-title">智能提示</div>
+                    <div class="feature-desc">遇到困难可查看提示</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 练习区域 -->
+        <div class="practice-area" id="practiceArea">
+            <div class="progress-text">
+                <span id="currentNum">1</span> / <span id="totalNum">20</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 5%"></div>
+            </div>
+
+            <div class="pinyin-display" id="pinyinDisplay">tiān</div>
+            <div class="quiz-display" id="quizDisplay"></div>
+            <div class="quiz-hint">根据拼音和词语提示，写出正确的汉字</div>
+
+            <input type="text" class="answer-input" id="answerInput" maxlength="1" autocomplete="off">
+
+            <div class="action-buttons" style="justify-content: center; margin-top: 20px;">
+                <button class="action-btn btn-hint" onclick="showHint()">💡 提示</button>
+                <button class="action-btn btn-next" onclick="checkAnswer()">✓ 确认</button>
+                <button class="action-btn" style="background: #6c757d; color: white;" onclick="skipQuestion()">跳过</button>
+            </div>
+
+            <div class="hint-area" id="hintArea">
+                <div class="hint-text" id="hintText">天</div>
+                <div class="word-info" id="wordInfo">天空、天气、今天</div>
+            </div>
+        </div>
+
+        <!-- 结果区域 -->
+        <div class="result-area" id="resultArea">
+            <div class="score-display" id="scoreDisplay">85</div>
+            <div class="score-label">分</div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="correctCount">17</div>
+                    <div class="stat-label">正确</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="wrongCount">3</div>
+                    <div class="stat-label">错误</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="accuracy">85%</div>
+                    <div class="stat-label">正确率</div>
+                </div>
+            </div>
+
+            <div class="wrong-words" id="wrongWordsArea">
+                <h3>需要加强的生字：</h3>
+                <div id="wrongWordsList"></div>
+            </div>
+
+            <div class="action-buttons" style="justify-content: center; margin-top: 25px;">
+                <button class="action-btn btn-start" onclick="restartPractice()">再练一次</button>
+                <button class="action-btn" style="background: #17a2b8; color: white;" onclick="backToHome()">返回首页</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 成功提示 -->
+    <div class="success-message" id="successMessage">🎉 答对了！</div>
+
+    <script>
+        // 人教版1-4年级生字数据库（已去重，含quiz组词填空）
+        const vocabularyData = {
+            1: [
+                {word: '天', pinyin: 'tiān', quiz: '今__', meaning: '天空、天气'},
+                {word: '地', pinyin: 'dì', quiz: '大__', meaning: '大地、土地'},
+                {word: '人', pinyin: 'rén', quiz: '好__', meaning: '人们、人民'},
+                {word: '你', pinyin: 'nǐ', quiz: '__好', meaning: '你好、你们'},
+                {word: '我', pinyin: 'wǒ', quiz: '__们', meaning: '我们、自我'},
+                {word: '他', pinyin: 'tā', quiz: '__们', meaning: '他们、他的'},
+                {word: '一', pinyin: 'yī', quiz: '__个', meaning: '一个、第一'},
+                {word: '二', pinyin: 'èr', quiz: '__月', meaning: '二月、第二'},
+                {word: '三', pinyin: 'sān', quiz: '__个', meaning: '三个、三月'},
+                {word: '四', pinyin: 'sì', quiz: '__季', meaning: '四季、四方'},
+                {word: '五', pinyin: 'wǔ', quiz: '__个', meaning: '五个、五月'},
+                {word: '六', pinyin: 'liù', quiz: '__个', meaning: '六个、六月'},
+                {word: '七', pinyin: 'qī', quiz: '__月', meaning: '七月、七天'},
+                {word: '八', pinyin: 'bā', quiz: '__个', meaning: '八个、八方'},
+                {word: '九', pinyin: 'jiǔ', quiz: '__月', meaning: '九月、九个'},
+                {word: '十', pinyin: 'shí', quiz: '__分', meaning: '十分、十个'},
+                {word: '上', pinyin: 'shàng', quiz: '__面', meaning: '上面、上去'},
+                {word: '下', pinyin: 'xià', quiz: '__来', meaning: '下面、下去'},
+                {word: '口', pinyin: 'kǒu', quiz: '人__', meaning: '人口、口水'},
+                {word: '日', pinyin: 'rì', quiz: '__子', meaning: '日子、日出'},
+                {word: '月', pinyin: 'yuè', quiz: '__亮', meaning: '月亮、月光'},
+                {word: '水', pinyin: 'shuǐ', quiz: '河__', meaning: '河水、水果'},
+                {word: '火', pinyin: 'huǒ', quiz: '__车', meaning: '火车、大火'},
+                {word: '山', pinyin: 'shān', quiz: '大__', meaning: '大山、山上'},
+                {word: '石', pinyin: 'shí', quiz: '__头', meaning: '石头、石子'},
+                {word: '田', pinyin: 'tián', quiz: '__地', meaning: '田地、种田'},
+                {word: '禾', pinyin: 'hé', quiz: '__苗', meaning: '禾苗、禾田'},
+                {word: '对', pinyin: 'duì', quiz: '__错', meaning: '对错、不对'},
+                {word: '云', pinyin: 'yún', quiz: '白__', meaning: '白云、云朵'},
+                {word: '雨', pinyin: 'yǔ', quiz: '下__', meaning: '下雨、雨水'},
+                {word: '风', pinyin: 'fēng', quiz: '大__', meaning: '大风、风车'},
+                {word: '花', pinyin: 'huā', quiz: '__朵', meaning: '花朵、花园'},
+                {word: '鸟', pinyin: 'niǎo', quiz: '小__', meaning: '小鸟、飞鸟'},
+                {word: '虫', pinyin: 'chóng', quiz: '__子', meaning: '虫子、小虫'},
+                {word: '爸', pinyin: 'bà', quiz: '老__', meaning: '爸爸、老爸'},
+                {word: '妈', pinyin: 'mā', quiz: '姑__', meaning: '妈妈、姑妈'},
+                {word: '大', pinyin: 'dà', quiz: '__小', meaning: '大小、大人'},
+                {word: '米', pinyin: 'mǐ', quiz: '大__', meaning: '大米、玉米'},
+                {word: '土', pinyin: 'tǔ', quiz: '泥__', meaning: '泥土、土地'},
+                {word: '马', pinyin: 'mǎ', quiz: '小__', meaning: '小马、马路'},
+                {word: '哥', pinyin: 'gē', quiz: '大__', meaning: '哥哥、大哥'},
+                {word: '弟', pinyin: 'dì', quiz: '兄__', meaning: '弟弟、兄弟'},
+                {word: '个', pinyin: 'gè', quiz: '一__', meaning: '一个、个子'},
+                {word: '画', pinyin: 'huà', quiz: '图__', meaning: '画画、图画'},
+                {word: '洗', pinyin: 'xǐ', quiz: '__手', meaning: '洗手、洗衣服'},
+                {word: '衣', pinyin: 'yī', quiz: '上__', meaning: '上衣、衣服'},
+                {word: '服', pinyin: 'fú', quiz: '衣__', meaning: '衣服、服气'},
+                {word: '鸡', pinyin: 'jī', quiz: '小__', meaning: '小鸡、公鸡'},
+                {word: '做', pinyin: 'zuò', quiz: '__事', meaning: '做事、做作业'},
+                {word: '过', pinyin: 'guò', quiz: '__去', meaning: '过去、过来'},
+                {word: '了', pinyin: 'le', quiz: '好__', meaning: '好了、走了'},
+                {word: '不', pinyin: 'bù', quiz: '__是', meaning: '不是、不好'},
+                {word: '乐', pinyin: 'lè', quiz: '快__', meaning: '快乐、乐园'},
+                {word: '出', pinyin: 'chū', quiz: '__来', meaning: '出来、出门'},
+                {word: '读', pinyin: 'dú', quiz: '__书', meaning: '读书、朗读'},
+                {word: '书', pinyin: 'shū', quiz: '__包', meaning: '书包、书本'},
+                {word: '骑', pinyin: 'qí', quiz: '__车', meaning: '骑车、骑马'},
+                {word: '车', pinyin: 'chē', quiz: '汽__', meaning: '汽车、火车'},
+                {word: '的', pinyin: 'de', quiz: '好__', meaning: '好的、我的'},
+                {word: '话', pinyin: 'huà', quiz: '说__', meaning: '说话、电话'},
+                {word: '白', pinyin: 'bái', quiz: '__色', meaning: '白色、白天'},
+                {word: '皮', pinyin: 'pí', quiz: '__球', meaning: '皮球、皮毛'},
+                {word: '小', pinyin: 'xiǎo', quiz: '__孩', meaning: '小孩、小鸟'},
+                {word: '爱', pinyin: 'ài', quiz: '__心', meaning: '爱心、可爱'},
+                {word: '吃', pinyin: 'chī', quiz: '__饭', meaning: '吃饭、好吃'},
+                {word: '鱼', pinyin: 'yú', quiz: '小__', meaning: '小鱼、金鱼'},
+                {word: '和', pinyin: 'hé', quiz: '__平', meaning: '和平、和好'},
+                {word: '牛', pinyin: 'niú', quiz: '黄__', meaning: '黄牛、水牛'},
+                {word: '草', pinyin: 'cǎo', quiz: '__地', meaning: '草地、小草'},
+                {word: '好', pinyin: 'hǎo', quiz: '你__', meaning: '你好、好人'},
+                {word: '家', pinyin: 'jiā', quiz: '大__', meaning: '大家、回家'},
+                {word: '有', pinyin: 'yǒu', quiz: '没__', meaning: '没有、有人'},
+                {word: '多', pinyin: 'duō', quiz: '__少', meaning: '多少、很多'},
+                {word: '少', pinyin: 'shǎo', quiz: '多__', meaning: '多少、少见'},
+                {word: '黄', pinyin: 'huáng', quiz: '__色', meaning: '黄色、黄河'},
+                {word: '只', pinyin: 'zhī', quiz: '一__', meaning: '一只、只有'},
+                {word: '猫', pinyin: 'māo', quiz: '小__', meaning: '小猫、花猫'},
+                {word: '边', pinyin: 'biān', quiz: '一__', meaning: '一边、旁边'},
+                {word: '鸭', pinyin: 'yā', quiz: '__子', meaning: '鸭子、小鸭'},
+                {word: '苹', pinyin: 'píng', quiz: '__果', meaning: '苹果'},
+                {word: '果', pinyin: 'guǒ', quiz: '水__', meaning: '水果、苹果'},
+                {word: '杏', pinyin: 'xìng', quiz: '__花', meaning: '杏花、杏子'},
+                {word: '桃', pinyin: 'táo', quiz: '__子', meaning: '桃子、桃花'},
+                {word: '早', pinyin: 'zǎo', quiz: '__上', meaning: '早上、早晨'},
+                {word: '刀', pinyin: 'dāo', quiz: '小__', meaning: '小刀、刀子'},
+                {word: '尺', pinyin: 'chǐ', quiz: '__子', meaning: '尺子、尺码'},
+                {word: '本', pinyin: 'běn', quiz: '书__', meaning: '书本、本来'},
+                {word: '木', pinyin: 'mù', quiz: '__头', meaning: '木头、树木'},
+                {word: '林', pinyin: 'lín', quiz: '树__', meaning: '树林、森林'},
+                {word: '力', pinyin: 'lì', quiz: '__气', meaning: '力气、力量'},
+                {word: '心', pinyin: 'xīn', quiz: '开__', meaning: '开心、心情'},
+                {word: '中', pinyin: 'zhōng', quiz: '__间', meaning: '中间、中国'},
+                {word: '立', pinyin: 'lì', quiz: '__正', meaning: '立正、站立'},
+                {word: '正', pinyin: 'zhèng', quiz: '__在', meaning: '正在、正好'},
+                {word: '在', pinyin: 'zài', quiz: '现__', meaning: '现在、在家'},
+                {word: '后', pinyin: 'hòu', quiz: '__面', meaning: '后面、以后'},
+                {word: '长', pinyin: 'cháng', quiz: '__短', meaning: '长短、长大'},
+                {word: '比', pinyin: 'bǐ', quiz: '__较', meaning: '比较、比赛'},
+                {word: '巴', pinyin: 'bā', quiz: '尾__', meaning: '尾巴、下巴'},
+                {word: '把', pinyin: 'bǎ', quiz: '__手', meaning: '把手、一把'},
+                {word: '们', pinyin: 'men', quiz: '人__', meaning: '人们、我们'},
+                {word: '问', pinyin: 'wèn', quiz: '__题', meaning: '问题、问好'},
+                {word: '半', pinyin: 'bàn', quiz: '一__', meaning: '一半、半天'},
+                {word: '从', pinyin: 'cóng', quiz: '__来', meaning: '从来、从前'},
+                {word: '才', pinyin: 'cái', quiz: '__能', meaning: '才能、刚才'},
+                {word: '明', pinyin: 'míng', quiz: '__天', meaning: '明天、明白'},
+                {word: '同', pinyin: 'tóng', quiz: '__学', meaning: '同学、相同'},
+                {word: '学', pinyin: 'xué', quiz: '__习', meaning: '学习、学校'},
+                {word: '自', pinyin: 'zì', quiz: '__己', meaning: '自己、自由'},
+                {word: '己', pinyin: 'jǐ', quiz: '自__', meaning: '自己、知己'},
+                {word: '又', pinyin: 'yòu', quiz: '__是', meaning: '又是、又大'}
+            ],
+            2: [
+                {word: '两', pinyin: 'liǎng', quiz: '__个', meaning: '两个、两半'},
+                {word: '哪', pinyin: 'nǎ', quiz: '__里', meaning: '哪里、哪个'},
+                {word: '宽', pinyin: 'kuān', quiz: '__广', meaning: '宽广、宽阔'},
+                {word: '顶', pinyin: 'dǐng', quiz: '山__', meaning: '山顶、头顶'},
+                {word: '眼', pinyin: 'yǎn', quiz: '__睛', meaning: '眼睛、眼光'},
+                {word: '睛', pinyin: 'jīng', quiz: '眼__', meaning: '眼睛、点睛'},
+                {word: '肚', pinyin: 'dù', quiz: '__子', meaning: '肚子、肚皮'},
+                {word: '孩', pinyin: 'hái', quiz: '__子', meaning: '孩子、女孩'},
+                {word: '跳', pinyin: 'tiào', quiz: '__高', meaning: '跳高、跳远'},
+                {word: '变', pinyin: 'biàn', quiz: '__化', meaning: '变化、改变'},
+                {word: '极', pinyin: 'jí', quiz: '北__', meaning: '北极、积极'},
+                {word: '片', pinyin: 'piàn', quiz: '一__', meaning: '一片、叶片'},
+                {word: '傍', pinyin: 'bàng', quiz: '__晚', meaning: '傍晚、傍晚'},
+                {word: '海', pinyin: 'hǎi', quiz: '大__', meaning: '大海、海边'},
+                {word: '洋', pinyin: 'yáng', quiz: '海__', meaning: '海洋、大洋'},
+                {word: '作', pinyin: 'zuò', quiz: '__业', meaning: '作业、作文'},
+                {word: '坏', pinyin: 'huài', quiz: '__人', meaning: '坏人、坏了'},
+                {word: '给', pinyin: 'gěi', quiz: '__你', meaning: '给你、交给'},
+                {word: '带', pinyin: 'dài', quiz: '__来', meaning: '带来、带走'},
+                {word: '法', pinyin: 'fǎ', quiz: '方__', meaning: '方法、办法'},
+                {word: '如', pinyin: 'rú', quiz: '__果', meaning: '如果、如同'},
+                {word: '脚', pinyin: 'jiǎo', quiz: '__步', meaning: '脚步、脚印'},
+                {word: '它', pinyin: 'tā', quiz: '__们', meaning: '它们、它的'},
+                {word: '娃', pinyin: 'wá', quiz: '女__', meaning: '娃娃、女娃'},
+                {word: '她', pinyin: 'tā', quiz: '__们', meaning: '她们、她的'},
+                {word: '毛', pinyin: 'máo', quiz: '__笔', meaning: '毛笔、毛巾'},
+                {word: '更', pinyin: 'gèng', quiz: '__好', meaning: '更好、更多'},
+                {word: '知', pinyin: 'zhī', quiz: '__道', meaning: '知道、知识'},
+                {word: '识', pinyin: 'shí', quiz: '知__', meaning: '知识、认识'},
+                {word: '园', pinyin: 'yuán', quiz: '公__', meaning: '公园、花园'},
+                {word: '孔', pinyin: 'kǒng', quiz: '__雀', meaning: '孔雀、小孔'},
+                {word: '桥', pinyin: 'qiáo', quiz: '大__', meaning: '大桥、小桥'},
+                {word: '群', pinyin: 'qún', quiz: '一__', meaning: '一群、群众'},
+                {word: '队', pinyin: 'duì', quiz: '__伍', meaning: '队伍、排队'},
+                {word: '旗', pinyin: 'qí', quiz: '红__', meaning: '红旗、国旗'},
+                {word: '铜', pinyin: 'tóng', quiz: '__号', meaning: '铜号、铜钱'},
+                {word: '号', pinyin: 'hào', quiz: '口__', meaning: '口号、号码'},
+                {word: '领', pinyin: 'lǐng', quiz: '__导', meaning: '领导、领队'},
+                {word: '巾', pinyin: 'jīn', quiz: '毛__', meaning: '毛巾、围巾'},
+                {word: '杨', pinyin: 'yáng', quiz: '__树', meaning: '杨树、杨柳'},
+                {word: '壮', pinyin: 'zhuàng', quiz: '__大', meaning: '壮大、壮丽'},
+                {word: '桐', pinyin: 'tóng', quiz: '梧__', meaning: '梧桐、油桐'},
+                {word: '枫', pinyin: 'fēng', quiz: '__叶', meaning: '枫叶、枫树'},
+                {word: '松', pinyin: 'sōng', quiz: '__树', meaning: '松树、放松'},
+                {word: '柏', pinyin: 'bǎi', quiz: '__树', meaning: '柏树、松柏'},
+                {word: '棉', pinyin: 'mián', quiz: '__花', meaning: '棉花、棉衣'},
+                {word: '杉', pinyin: 'shān', quiz: '水__', meaning: '水杉、杉树'},
+                {word: '化', pinyin: 'huà', quiz: '变__', meaning: '变化、文化'},
+                {word: '桂', pinyin: 'guì', quiz: '__花', meaning: '桂花、桂树'},
+                {word: '歌', pinyin: 'gē', quiz: '唱__', meaning: '唱歌、歌曲'},
+                {word: '写', pinyin: 'xiě', quiz: '__字', meaning: '写字、写作'},
+                {word: '丛', pinyin: 'cóng', quiz: '草__', meaning: '草丛、花丛'},
+                {word: '深', pinyin: 'shēn', quiz: '__处', meaning: '深处、深水'},
+                {word: '熊', pinyin: 'xióng', quiz: '__猫', meaning: '熊猫、小熊'},
+                {word: '朋', pinyin: 'péng', quiz: '__友', meaning: '朋友、亲朋'},
+                {word: '友', pinyin: 'yǒu', quiz: '__好', meaning: '友好、朋友'},
+                {word: '季', pinyin: 'jì', quiz: '四__', meaning: '四季、季节'},
+                {word: '吹', pinyin: 'chuī', quiz: '__风', meaning: '吹风、吹牛'},
+                {word: '肥', pinyin: 'féi', quiz: '__胖', meaning: '肥胖、肥大'},
+                {word: '农', pinyin: 'nóng', quiz: '__民', meaning: '农民、农田'},
+                {word: '事', pinyin: 'shì', quiz: '做__', meaning: '事情、做事'},
+                {word: '忙', pinyin: 'máng', quiz: '帮__', meaning: '帮忙、忙碌'},
+                {word: '归', pinyin: 'guī', quiz: '__来', meaning: '归来、回归'},
+                {word: '戴', pinyin: 'dài', quiz: '穿__', meaning: '穿戴、戴帽'},
+                {word: '称', pinyin: 'chēng', quiz: '__呼', meaning: '称呼、名称'},
+                {word: '柱', pinyin: 'zhù', quiz: '__子', meaning: '柱子、圆柱'},
+                {word: '底', pinyin: 'dǐ', quiz: '__下', meaning: '底下、到底'},
+                {word: '杆', pinyin: 'gǎn', quiz: '笔__', meaning: '笔杆、栏杆'},
+                {word: '秤', pinyin: 'chèng', quiz: '__杆', meaning: '秤杆、台秤'},
+                {word: '岁', pinyin: 'suì', quiz: '__月', meaning: '岁月、几岁'},
+                {word: '站', pinyin: 'zhàn', quiz: '__立', meaning: '站立、车站'},
+                {word: '船', pinyin: 'chuán', quiz: '小__', meaning: '小船、轮船'},
+                {word: '然', pinyin: 'rán', quiz: '__后', meaning: '然后、自然'},
+                {word: '幅', pinyin: 'fú', quiz: '一__', meaning: '一幅、幅度'},
+                {word: '评', pinyin: 'píng', quiz: '__论', meaning: '评论、评比'},
+                {word: '奖', pinyin: 'jiǎng', quiz: '__励', meaning: '奖励、奖品'},
+                {word: '纸', pinyin: 'zhǐ', quiz: '__张', meaning: '纸张、白纸'},
+                {word: '报', pinyin: 'bào', quiz: '__纸', meaning: '报纸、报告'},
+                {word: '另', pinyin: 'lìng', quiz: '__外', meaning: '另外、另类'},
+                {word: '及', pinyin: 'jí', quiz: '__时', meaning: '及时、以及'},
+                {word: '拿', pinyin: 'ná', quiz: '__来', meaning: '拿来、拿走'},
+                {word: '并', pinyin: 'bìng', quiz: '__且', meaning: '并且、合并'},
+                {word: '封', pinyin: 'fēng', quiz: '信__', meaning: '信封、封面'},
+                {word: '信', pinyin: 'xìn', quiz: '相__', meaning: '相信、信心'},
+                {word: '今', pinyin: 'jīn', quiz: '__天', meaning: '今天、今年'},
+                {word: '支', pinyin: 'zhī', quiz: '一__', meaning: '一支、支持'},
+                {word: '圆', pinyin: 'yuán', quiz: '__形', meaning: '圆形、圆圈'},
+                {word: '珠', pinyin: 'zhū', quiz: '珍__', meaning: '珍珠、珠子'},
+                {word: '笔', pinyin: 'bǐ', quiz: '铅__', meaning: '铅笔、毛笔'},
+                {word: '灯', pinyin: 'dēng', quiz: '电__', meaning: '电灯、灯光'},
+                {word: '电', pinyin: 'diàn', quiz: '__视', meaning: '电视、电话'},
+                {word: '影', pinyin: 'yǐng', quiz: '电__', meaning: '电影、影子'},
+                {word: '楼', pinyin: 'lóu', quiz: '__房', meaning: '楼房、楼上'},
+                {word: '依', pinyin: 'yī', quiz: '__靠', meaning: '依靠、依然'},
+                {word: '尽', pinyin: 'jìn', quiz: '__力', meaning: '尽力、尽头'},
+                {word: '层', pinyin: 'céng', quiz: '楼__', meaning: '楼层、一层'},
+                {word: '照', pinyin: 'zhào', quiz: '__片', meaning: '照片、日照'},
+                {word: '炉', pinyin: 'lú', quiz: '火__', meaning: '火炉、炉子'},
+                {word: '烟', pinyin: 'yān', quiz: '__火', meaning: '烟火、抽烟'},
+                {word: '挂', pinyin: 'guà', quiz: '__面', meaning: '挂面、挂住'},
+                {word: '川', pinyin: 'chuān', quiz: '四__', meaning: '四川、山川'},
+                {word: '南', pinyin: 'nán', quiz: '__方', meaning: '南方、江南'},
+                {word: '部', pinyin: 'bù', quiz: '__分', meaning: '部分、全部'},
+                {word: '些', pinyin: 'xiē', quiz: '一__', meaning: '一些、些许'},
+                {word: '巨', pinyin: 'jù', quiz: '__大', meaning: '巨大、巨人'},
+                {word: '位', pinyin: 'wèi', quiz: '__置', meaning: '位置、座位'},
+                {word: '向', pinyin: 'xiàng', quiz: '方__', meaning: '方向、向前'},
+                {word: '每', pinyin: 'měi', quiz: '__天', meaning: '每天、每个'},
+                {word: '升', pinyin: 'shēng', quiz: '上__', meaning: '上升、升起'},
+                {word: '闪', pinyin: 'shǎn', quiz: '__光', meaning: '闪光、闪亮'},
+                {word: '狗', pinyin: 'gǒu', quiz: '小__', meaning: '小狗、花狗'},
+                {word: '名', pinyin: 'míng', quiz: '__字', meaning: '名字、有名'},
+                {word: '胜', pinyin: 'shèng', quiz: '__利', meaning: '胜利、胜出'},
+                {word: '迹', pinyin: 'jì', quiz: '古__', meaning: '古迹、痕迹'},
+                {word: '央', pinyin: 'yāng', quiz: '中__', meaning: '中央、央求'},
+                {word: '丽', pinyin: 'lì', quiz: '美__', meaning: '美丽、华丽'},
+                {word: '华', pinyin: 'huá', quiz: '中__', meaning: '中华、华丽'},
+                {word: '展', pinyin: 'zhǎn', quiz: '__现', meaning: '展现、展示'},
+                {word: '现', pinyin: 'xiàn', quiz: '__在', meaning: '现在、出现'},
+                {word: '披', pinyin: 'pī', quiz: '__风', meaning: '披风、披上'},
+                {word: '份', pinyin: 'fèn', quiz: '一__', meaning: '一份、月份'},
+                {word: '坡', pinyin: 'pō', quiz: '山__', meaning: '山坡、上坡'},
+                {word: '梯', pinyin: 'tī', quiz: '楼__', meaning: '楼梯、阶梯'},
+                {word: '客', pinyin: 'kè', quiz: '__人', meaning: '客人、客气'},
+                {word: '收', pinyin: 'shōu', quiz: '__到', meaning: '收到、收入'},
+                {word: '城', pinyin: 'chéng', quiz: '__市', meaning: '城市、进城'},
+                {word: '市', pinyin: 'shì', quiz: '城__', meaning: '城市、市场'},
+                {word: '利', pinyin: 'lì', quiz: '__用', meaning: '利用、胜利'},
+                {word: '井', pinyin: 'jǐng', quiz: '水__', meaning: '水井、井口'},
+                {word: '观', pinyin: 'guān', quiz: '__看', meaning: '观看、参观'},
+                {word: '沿', pinyin: 'yán', quiz: '边__', meaning: '边沿、沿着'},
+                {word: '答', pinyin: 'dá', quiz: '回__', meaning: '回答、答题'},
+                {word: '渴', pinyin: 'kě', quiz: '口__', meaning: '口渴、渴了'},
+                {word: '喝', pinyin: 'hē', quiz: '__水', meaning: '喝水、喝奶'},
+                {word: '际', pinyin: 'jì', quiz: '实__', meaning: '实际、国际'},
+                {word: '面', pinyin: 'miàn', quiz: '__条', meaning: '面条、上面'},
+                {word: '阵', pinyin: 'zhèn', quiz: '一__', meaning: '一阵、阵雨'},
+                {word: '朗', pinyin: 'lǎng', quiz: '晴__', meaning: '晴朗、朗读'},
+                {word: '枯', pinyin: 'kū', quiz: '干__', meaning: '干枯、枯叶'},
+                {word: '却', pinyin: 'què', quiz: '冷__', meaning: '冷却、退却'},
+                {word: '将', pinyin: 'jiāng', quiz: '__来', meaning: '将来、将要'},
+                {word: '纷', pinyin: 'fēn', quiz: '缤__', meaning: '纷纷、纷飞'},
+                {word: '夜', pinyin: 'yè', quiz: '__晚', meaning: '夜晚、黑夜'},
+                {word: '棵', pinyin: 'kē', quiz: '一__', meaning: '一棵、棵数'},
+                {word: '谢', pinyin: 'xiè', quiz: '感__', meaning: '感谢、谢谢'},
+                {word: '想', pinyin: 'xiǎng', quiz: '__念', meaning: '想念、想法'},
+                {word: '盯', pinyin: 'dīng', quiz: '__着', meaning: '盯着、盯住'},
+                {word: '言', pinyin: 'yán', quiz: '语__', meaning: '语言、发言'},
+                {word: '邻', pinyin: 'lín', quiz: '__居', meaning: '邻居、邻近'},
+                {word: '治', pinyin: 'zhì', quiz: '__病', meaning: '治病、治理'},
+                {word: '怪', pinyin: 'guài', quiz: '奇__', meaning: '奇怪、怪物'},
+                {word: '洪', pinyin: 'hóng', quiz: '__水', meaning: '洪水、洪大'},
+                {word: '灾', pinyin: 'zāi', quiz: '__难', meaning: '灾难、火灾'},
+                {word: '难', pinyin: 'nàn', quiz: '困__', meaning: '困难、难题'},
+                {word: '道', pinyin: 'dào', quiz: '__路', meaning: '道路、道理'},
+                {word: '认', pinyin: 'rèn', quiz: '__为', meaning: '认为、认识'},
+                {word: '被', pinyin: 'bèi', quiz: '__子', meaning: '被子、被动'},
+                {word: '业', pinyin: 'yè', quiz: '作__', meaning: '作业、毕业'},
+                {word: '产', pinyin: 'chǎn', quiz: '生__', meaning: '生产、产品'},
+                {word: '扁', pinyin: 'biǎn', quiz: '__担', meaning: '扁担、扁平'},
+                {word: '担', pinyin: 'dàn', quiz: '__子', meaning: '担子、担心'},
+                {word: '志', pinyin: 'zhì', quiz: '同__', meaning: '同志、志气'},
+                {word: '伍', pinyin: 'wǔ', quiz: '队__', meaning: '队伍、入伍'},
+                {word: '军', pinyin: 'jūn', quiz: '__人', meaning: '军人、军队'},
+                {word: '战', pinyin: 'zhàn', quiz: '__士', meaning: '战士、战斗'},
+                {word: '士', pinyin: 'shì', quiz: '__兵', meaning: '士兵、护士'},
+                {word: '忘', pinyin: 'wàng', quiz: '__记', meaning: '忘记、难忘'},
+                {word: '村', pinyin: 'cūn', quiz: '__庄', meaning: '村庄、农村'},
+                {word: '叫', pinyin: 'jiào', quiz: '__声', meaning: '叫声、叫好'},
+                {word: '主', pinyin: 'zhǔ', quiz: '__人', meaning: '主人、主要'},
+                {word: '席', pinyin: 'xí', quiz: '主__', meaning: '主席、出席'},
+                {word: '乡', pinyin: 'xiāng', quiz: '家__', meaning: '家乡、乡村'},
+                {word: '亲', pinyin: 'qīn', quiz: '__人', meaning: '亲人、亲切'},
+                {word: '告', pinyin: 'gào', quiz: '__诉', meaning: '告诉、报告'},
+                {word: '诉', pinyin: 'sù', quiz: '告__', meaning: '告诉、诉说'}
+            ],
+            3: [
+                {word: '晨', pinyin: 'chén', quiz: '早__', meaning: '早晨、清晨'},
+                {word: '绒', pinyin: 'róng', quiz: '__毛', meaning: '绒毛、绒线'},
+                {word: '球', pinyin: 'qiú', quiz: '足__', meaning: '足球、地球'},
+                {word: '汉', pinyin: 'hàn', quiz: '__族', meaning: '汉族、汉字'},
+                {word: '艳', pinyin: 'yàn', quiz: '__丽', meaning: '艳丽、鲜艳'},
+                {word: '扮', pinyin: 'bàn', quiz: '打__', meaning: '打扮、装扮'},
+                {word: '静', pinyin: 'jìng', quiz: '安__', meaning: '安静、平静'},
+                {word: '停', pinyin: 'tíng', quiz: '__止', meaning: '停止、停下'},
+                {word: '粗', pinyin: 'cū', quiz: '__心', meaning: '粗心、粗大'},
+                {word: '落', pinyin: 'luò', quiz: '__叶', meaning: '落叶、落下'},
+                {word: '荒', pinyin: 'huāng', quiz: '__野', meaning: '荒野、荒凉'},
+                {word: '笛', pinyin: 'dí', quiz: '__子', meaning: '笛子、吹笛'},
+                {word: '舞', pinyin: 'wǔ', quiz: '跳__', meaning: '跳舞、舞蹈'},
+                {word: '狂', pinyin: 'kuáng', quiz: '__风', meaning: '狂风、疯狂'},
+                {word: '罚', pinyin: 'fá', quiz: '惩__', meaning: '惩罚、处罚'},
+                {word: '假', pinyin: 'jiǎ', quiz: '真__', meaning: '真假、请假'},
+                {word: '互', pinyin: 'hù', quiz: '__相', meaning: '互相、互助'},
+                {word: '所', pinyin: 'suǒ', quiz: '__以', meaning: '所以、所有'},
+                {word: '够', pinyin: 'gòu', quiz: '足__', meaning: '足够、能够'},
+                {word: '猜', pinyin: 'cāi', quiz: '__测', meaning: '猜测、猜想'},
+                {word: '扬', pinyin: 'yáng', quiz: '飘__', meaning: '飘扬、表扬'},
+                {word: '臂', pinyin: 'bì', quiz: '手__', meaning: '手臂、双臂'},
+                {word: '寒', pinyin: 'hán', quiz: '__冷', meaning: '寒冷、寒风'},
+                {word: '径', pinyin: 'jìng', quiz: '小__', meaning: '小径、路径'},
+                {word: '斜', pinyin: 'xié', quiz: '__坡', meaning: '斜坡、倾斜'},
+                {word: '霜', pinyin: 'shuāng', quiz: '__冻', meaning: '霜冻、冰霜'},
+                {word: '赠', pinyin: 'zèng', quiz: '__送', meaning: '赠送、赠品'},
+                {word: '刘', pinyin: 'liú', quiz: '姓__', meaning: '姓刘、刘备'},
+                {word: '盖', pinyin: 'gài', quiz: '__子', meaning: '盖子、盖上'},
+                {word: '菊', pinyin: 'jú', quiz: '__花', meaning: '菊花、秋菊'},
+                {word: '残', pinyin: 'cán', quiz: '__阳', meaning: '残阳、残留'},
+                {word: '君', pinyin: 'jūn', quiz: '__子', meaning: '君子、君王'},
+                {word: '橙', pinyin: 'chéng', quiz: '__子', meaning: '橙子、橙色'},
+                {word: '送', pinyin: 'sòng', quiz: '__别', meaning: '送别、送给'},
+                {word: '挑', pinyin: 'tiāo', quiz: '__选', meaning: '挑选、挑水'},
+                {word: '铺', pinyin: 'pū', quiz: '__路', meaning: '铺路、铺开'},
+                {word: '泥', pinyin: 'ní', quiz: '水__', meaning: '水泥、泥巴'},
+                {word: '晶', pinyin: 'jīng', quiz: '水__', meaning: '水晶、晶莹'},
+                {word: '紧', pinyin: 'jǐn', quiz: '__张', meaning: '紧张、抓紧'},
+                {word: '院', pinyin: 'yuàn', quiz: '__子', meaning: '院子、大院'},
+                {word: '印', pinyin: 'yìn', quiz: '脚__', meaning: '脚印、打印'},
+                {word: '排', pinyin: 'pái', quiz: '__队', meaning: '排队、排列'},
+                {word: '列', pinyin: 'liè', quiz: '排__', meaning: '排列、列车'},
+                {word: '规', pinyin: 'guī', quiz: '__则', meaning: '规则、规定'},
+                {word: '则', pinyin: 'zé', quiz: '规__', meaning: '规则、原则'},
+                {word: '乱', pinyin: 'luàn', quiz: '杂__', meaning: '杂乱、混乱'},
+                {word: '棕', pinyin: 'zōng', quiz: '__色', meaning: '棕色、棕树'},
+                {word: '迟', pinyin: 'chí', quiz: '__到', meaning: '迟到、迟早'},
+                {word: '盒', pinyin: 'hé', quiz: '__子', meaning: '盒子、饭盒'},
+                {word: '颜', pinyin: 'yán', quiz: '__色', meaning: '颜色、颜料'},
+                {word: '料', pinyin: 'liào', quiz: '材__', meaning: '材料、肥料'},
+                {word: '票', pinyin: 'piào', quiz: '车__', meaning: '车票、门票'},
+                {word: '飘', pinyin: 'piāo', quiz: '__扬', meaning: '飘扬、飘落'},
+                {word: '争', pinyin: 'zhēng', quiz: '__取', meaning: '争取、争气'},
+                {word: '仙', pinyin: 'xiān', quiz: '__女', meaning: '仙女、神仙'},
+                {word: '淡', pinyin: 'dàn', quiz: '__水', meaning: '淡水、平淡'},
+                {word: '闻', pinyin: 'wén', quiz: '新__', meaning: '新闻、听闻'},
+                {word: '梨', pinyin: 'lí', quiz: '__花', meaning: '梨花、雪梨'},
+                {word: '勾', pinyin: 'gōu', quiz: '__画', meaning: '勾画、勾住'},
+                {word: '曲', pinyin: 'qǔ', quiz: '歌__', meaning: '歌曲、曲子'},
+                {word: '丰', pinyin: 'fēng', quiz: '__收', meaning: '丰收、丰富'},
+                {word: '柴', pinyin: 'chái', quiz: '火__', meaning: '火柴、木柴'},
+                {word: '旧', pinyin: 'jiù', quiz: '__书', meaning: '旧书、新旧'},
+                {word: '裙', pinyin: 'qún', quiz: '__子', meaning: '裙子、花裙'},
+                {word: '怜', pinyin: 'lián', quiz: '可__', meaning: '可怜、怜爱'},
+                {word: '饿', pinyin: 'è', quiz: '饥__', meaning: '饥饿、饿了'},
+                {word: '焰', pinyin: 'yàn', quiz: '火__', meaning: '火焰、焰火'},
+                {word: '蜡', pinyin: 'là', quiz: '__烛', meaning: '蜡烛、蜡笔'},
+                {word: '烛', pinyin: 'zhú', quiz: '__光', meaning: '烛光、花烛'},
+                {word: '富', pinyin: 'fù', quiz: '__有', meaning: '富有、丰富'},
+                {word: '晃', pinyin: 'huàng', quiz: '摇__', meaning: '摇晃、晃动'},
+                {word: '划', pinyin: 'huá', quiz: '__船', meaning: '划船、划算'},
+                {word: '缩', pinyin: 'suō', quiz: '__小', meaning: '缩小、缩水'},
+                {word: '努', pinyin: 'nǔ', quiz: '__力', meaning: '努力、努嘴'},
+                {word: '茎', pinyin: 'jīng', quiz: '根__', meaning: '根茎、茎叶'},
+                {word: '推', pinyin: 'tuī', quiz: '__动', meaning: '推动、推车'},
+                {word: '吱', pinyin: 'zhī', quiz: '__呀', meaning: '吱呀、吱声'},
+                {word: '拆', pinyin: 'chāi', quiz: '__开', meaning: '拆开、拆迁'},
+                {word: '咱', pinyin: 'zán', quiz: '__们', meaning: '咱们、咱家'},
+                {word: '偷', pinyin: 'tōu', quiz: '小__', meaning: '小偷、偷走'},
+                {word: '应', pinyin: 'yìng', quiz: '__该', meaning: '应该、答应'},
+                {word: '卷', pinyin: 'juǎn', quiz: '__尺', meaning: '卷尺、试卷'},
+                {word: '骨', pinyin: 'gū', quiz: '__碌', meaning: '骨碌、骨头'},
+                {word: '齿', pinyin: 'chǐ', quiz: '牙__', meaning: '牙齿、齿轮'},
+                {word: '嚼', pinyin: 'jiáo', quiz: '__碎', meaning: '嚼碎、咀嚼'},
+                {word: '吞', pinyin: 'tūn', quiz: '__下', meaning: '吞下、吞咽'},
+                {word: '胃', pinyin: 'wèi', quiz: '__口', meaning: '胃口、胃痛'},
+                {word: '悲', pinyin: 'bēi', quiz: '__伤', meaning: '悲伤、悲观'},
+                {word: '泪', pinyin: 'lèi', quiz: '眼__', meaning: '眼泪、泪水'},
+                {word: '眯', pinyin: 'mī', quiz: '__眼', meaning: '眯眼、笑眯'},
+                {word: '洞', pinyin: 'dòng', quiz: '山__', meaning: '山洞、洞口'},
+                {word: '准', pinyin: 'zhǔn', quiz: '__备', meaning: '准备、准确'},
+                {word: '备', pinyin: 'bèi', quiz: '准__', meaning: '准备、防备'},
+                {word: '暴', pinyin: 'bào', quiz: '__雨', meaning: '暴雨、暴风'},
+                {word: '墙', pinyin: 'qiáng', quiz: '__壁', meaning: '墙壁、城墙'},
+                {word: '壁', pinyin: 'bì', quiz: '墙__', meaning: '墙壁、壁画'},
+                {word: '蜘', pinyin: 'zhī', quiz: '__蛛', meaning: '蜘蛛'},
+                {word: '蛛', pinyin: 'zhū', quiz: '蜘__', meaning: '蜘蛛'},
+                {word: '漂', pinyin: 'piào', quiz: '__亮', meaning: '漂亮、漂浮'},
+                {word: '撞', pinyin: 'zhuàng', quiz: '__见', meaning: '撞见、撞车'},
+                {word: '饱', pinyin: 'bǎo', quiz: '吃__', meaning: '吃饱、饱了'},
+                {word: '晒', pinyin: 'shài', quiz: '__太阳', meaning: '晒太阳、晾晒'},
+                {word: '搭', pinyin: 'dā', quiz: '__船', meaning: '搭船、搭桥'},
+                {word: '父', pinyin: 'fù', quiz: '__亲', meaning: '父亲、父母'},
+                {word: '羽', pinyin: 'yǔ', quiz: '__毛', meaning: '羽毛、羽绒'},
+                {word: '翠', pinyin: 'cuì', quiz: '__绿', meaning: '翠绿、翠竹'},
+                {word: '嘴', pinyin: 'zuǐ', quiz: '__巴', meaning: '嘴巴、张嘴'},
+                {word: '悄', pinyin: 'qiāo', quiz: '__然', meaning: '悄悄、悄然'},
+                {word: '哦', pinyin: 'ò', quiz: '__呀', meaning: '哦呀'},
+                {word: '捕', pinyin: 'bǔ', quiz: '__捉', meaning: '捕捉、捕鱼'},
+                {word: '蒲', pinyin: 'pú', quiz: '__公英', meaning: '蒲公英'},
+                {word: '英', pinyin: 'yīng', quiz: '__雄', meaning: '英雄、英语'},
+                {word: '耍', pinyin: 'shuǎ', quiz: '玩__', meaning: '玩耍、杂耍'},
+                {word: '喊', pinyin: 'hǎn', quiz: '__叫', meaning: '喊叫、大喊'},
+                {word: '欠', pinyin: 'qiàn', quiz: '哈__', meaning: '哈欠、欠条'},
+                {word: '钓', pinyin: 'diào', quiz: '__鱼', meaning: '钓鱼、钓竿'},
+                {word: '而', pinyin: 'ér', quiz: '__且', meaning: '而且、而后'},
+                {word: '察', pinyin: 'chá', quiz: '观__', meaning: '观察、视察'},
+                {word: '拢', pinyin: 'lǒng', quiz: '合__', meaning: '合拢、聚拢'},
+                {word: '掌', pinyin: 'zhǎng', quiz: '手__', meaning: '手掌、掌声'},
+                {word: '趣', pinyin: 'qù', quiz: '有__', meaning: '有趣、趣味'},
+                {word: '喜', pinyin: 'xǐ', quiz: '__欢', meaning: '喜欢、喜悦'},
+                {word: '朝', pinyin: 'cháo', quiz: '__代', meaning: '朝代、朝向'},
+                {word: '雾', pinyin: 'wù', quiz: '大__', meaning: '大雾、雾气'},
+                {word: '蒙', pinyin: 'méng', quiz: '启__', meaning: '蒙蒙、蒙住'},
+                {word: '总', pinyin: 'zǒng', quiz: '__是', meaning: '总是、总结'},
+                {word: '抖', pinyin: 'dǒu', quiz: '__动', meaning: '抖动、发抖'},
+                {word: '露', pinyin: 'lù', quiz: '__水', meaning: '露水、露珠'},
+                {word: '湿', pinyin: 'shī', quiz: '__润', meaning: '湿润、潮湿'},
+                {word: '吸', pinyin: 'xī', quiz: '__收', meaning: '吸收、呼吸'},
+                {word: '猎', pinyin: 'liè', quiz: '__人', meaning: '猎人、打猎'},
+                {word: '翅', pinyin: 'chì', quiz: '__膀', meaning: '翅膀、鱼翅'},
+                {word: '膀', pinyin: 'bǎng', quiz: '翅__', meaning: '翅膀、臂膀'},
+                {word: '重', pinyin: 'zhòng', quiz: '__要', meaning: '重要、重量'},
+                {word: '弃', pinyin: 'qì', quiz: '放__', meaning: '放弃、抛弃'},
+                {word: '持', pinyin: 'chí', quiz: '坚__', meaning: '坚持、持久'},
+                {word: '优', pinyin: 'yōu', quiz: '__秀', meaning: '优秀、优美'},
+                {word: '坛', pinyin: 'tán', quiz: '花__', meaning: '花坛、天坛'},
+                {word: '显', pinyin: 'xiǎn', quiz: '__示', meaning: '显示、明显'},
+                {word: '材', pinyin: 'cái', quiz: '__料', meaning: '材料、木材'},
+                {word: '软', pinyin: 'ruǎn', quiz: '柔__', meaning: '柔软、松软'},
+                {word: '刮', pinyin: 'guā', quiz: '__风', meaning: '刮风、刮过'},
+                {word: '库', pinyin: 'kù', quiz: '仓__', meaning: '仓库、水库'},
+                {word: '欣', pinyin: 'xīn', quiz: '__赏', meaning: '欣赏、欣喜'},
+                {word: '赏', pinyin: 'shǎng', quiz: '欣__', meaning: '欣赏、奖赏'},
+                {word: '映', pinyin: 'yìng', quiz: '反__', meaning: '反映、倒映'},
+                {word: '挡', pinyin: 'dǎng', quiz: '__住', meaning: '挡住、阻挡'},
+                {word: '视', pinyin: 'shì', quiz: '__线', meaning: '视线、电视'},
+                {word: '线', pinyin: 'xiàn', quiz: '视__', meaning: '视线、线条'},
+                {word: '浸', pinyin: 'jìn', quiz: '沉__', meaning: '沉浸、浸泡'},
+                {word: '献', pinyin: 'xiàn', quiz: '贡__', meaning: '贡献、奉献'},
+                {word: '药', pinyin: 'yào', quiz: '__材', meaning: '药材、吃药'},
+                {word: '舌', pinyin: 'shé', quiz: '__头', meaning: '舌头、舌尖'},
+                {word: '妙', pinyin: 'miào', quiz: '美__', meaning: '美妙、奇妙'},
+                {word: '演', pinyin: 'yǎn', quiz: '__奏', meaning: '演奏、表演'},
+                {word: '奏', pinyin: 'zòu', quiz: '演__', meaning: '演奏、伴奏'},
+                {word: '琴', pinyin: 'qín', quiz: '钢__', meaning: '钢琴、琴声'},
+                {word: '柔', pinyin: 'róu', quiz: '温__', meaning: '温柔、柔软'},
+                {word: '感', pinyin: 'gǎn', quiz: '__动', meaning: '感动、感谢'},
+                {word: '受', pinyin: 'shòu', quiz: '感__', meaning: '感受、接受'},
+                {word: '激', pinyin: 'jī', quiz: '__动', meaning: '激动、激动'},
+                {word: '击', pinyin: 'jī', quiz: '打__', meaning: '打击、攻击'},
+                {word: '器', pinyin: 'qì', quiz: '乐__', meaning: '乐器、机器'},
+                {word: '滴', pinyin: 'dī', quiz: '水__', meaning: '水滴、滴下'},
+                {word: '敲', pinyin: 'qiāo', quiz: '__门', meaning: '敲门、敲打'},
+                {word: '鸣', pinyin: 'míng', quiz: '__叫', meaning: '鸣叫、鸣笛'},
+                {word: '鼻', pinyin: 'bí', quiz: '__子', meaning: '鼻子、鼻孔'}
+            ],
+            4: [
+                {word: '潮', pinyin: 'cháo', quiz: '__水', meaning: '潮水、潮汐'},
+                {word: '据', pinyin: 'jù', quiz: '根__', meaning: '根据、据说'},
+                {word: '堤', pinyin: 'dī', quiz: '大__', meaning: '大堤、堤坝'},
+                {word: '阔', pinyin: 'kuò', quiz: '宽__', meaning: '宽阔、广阔'},
+                {word: '笼', pinyin: 'lǒng', quiz: '__罩', meaning: '笼罩、笼子'},
+                {word: '罩', pinyin: 'zhào', quiz: '口__', meaning: '口罩、灯罩'},
+                {word: '盼', pinyin: 'pàn', quiz: '__望', meaning: '盼望、期盼'},
+                {word: '滚', pinyin: 'gǔn', quiz: '__动', meaning: '滚动、翻滚'},
+                {word: '顿', pinyin: 'dùn', quiz: '__时', meaning: '顿时、停顿'},
+                {word: '逐', pinyin: 'zhú', quiz: '__渐', meaning: '逐渐、追逐'},
+                {word: '渐', pinyin: 'jiàn', quiz: '逐__', meaning: '渐渐、逐渐'},
+                {word: '犹', pinyin: 'yóu', quiz: '__如', meaning: '犹如、犹豫'},
+                {word: '崩', pinyin: 'bēng', quiz: '山__', meaning: '山崩、崩塌'},
+                {word: '震', pinyin: 'zhèn', quiz: '地__', meaning: '地震、震动'},
+                {word: '余', pinyin: 'yú', quiz: '剩__', meaning: '剩余、余波'},
+                {word: '淘', pinyin: 'táo', quiz: '__气', meaning: '淘气、淘米'},
+                {word: '牵', pinyin: 'qiān', quiz: '__手', meaning: '牵手、牵挂'},
+                {word: '鹅', pinyin: 'é', quiz: '白__', meaning: '白鹅、鹅毛'},
+                {word: '卵', pinyin: 'luǎn', quiz: '鹅__石', meaning: '鹅卵石、产卵'},
+                {word: '坑', pinyin: 'kēng', quiz: '水__', meaning: '水坑、泥坑'},
+                {word: '洼', pinyin: 'wā', quiz: '__地', meaning: '洼地、低洼'},
+                {word: '庄', pinyin: 'zhuāng', quiz: '村__', meaning: '村庄、庄稼'},
+                {word: '稼', pinyin: 'jià', quiz: '庄__', meaning: '庄稼、农稼'},
+                {word: '俗', pinyin: 'sú', quiz: '风__', meaning: '风俗、习俗'},
+                {word: '跃', pinyin: 'yuè', quiz: '跳__', meaning: '跳跃、飞跃'},
+                {word: '葡', pinyin: 'pú', quiz: '__萄', meaning: '葡萄'},
+                {word: '萄', pinyin: 'táo', quiz: '葡__', meaning: '葡萄'},
+                {word: '稻', pinyin: 'dào', quiz: '水__', meaning: '水稻、稻谷'},
+                {word: '熟', pinyin: 'shú', quiz: '成__', meaning: '成熟、熟悉'},
+                {word: '豌', pinyin: 'wān', quiz: '__豆', meaning: '豌豆'},
+                {word: '按', pinyin: 'àn', quiz: '__照', meaning: '按照、按时'},
+                {word: '舒', pinyin: 'shū', quiz: '__服', meaning: '舒服、舒适'},
+                {word: '适', pinyin: 'shì', quiz: '__合', meaning: '适合、舒适'},
+                {word: '恐', pinyin: 'kǒng', quiz: '__怕', meaning: '恐怕、恐龙'},
+                {word: '僵', pinyin: 'jiāng', quiz: '__硬', meaning: '僵硬、冻僵'},
+                {word: '硬', pinyin: 'yìng', quiz: '坚__', meaning: '坚硬、硬币'},
+                {word: '枪', pinyin: 'qiāng', quiz: '手__', meaning: '手枪、枪声'},
+                {word: '耐', pinyin: 'nài', quiz: '__心', meaning: '耐心、忍耐'},
+                {word: '探', pinyin: 'tàn', quiz: '__望', meaning: '探望、探险'},
+                {word: '愉', pinyin: 'yú', quiz: '__快', meaning: '愉快、愉悦'},
+                {word: '曾', pinyin: 'céng', quiz: '__经', meaning: '曾经、未曾'},
+                {word: '达', pinyin: 'dá', quiz: '到__', meaning: '到达、达到'},
+                {word: '蚊', pinyin: 'wén', quiz: '__子', meaning: '蚊子、蚊香'},
+                {word: '即', pinyin: 'jí', quiz: '__使', meaning: '即使、即刻'},
+                {word: '科', pinyin: 'kē', quiz: '__学', meaning: '科学、科目'},
+                {word: '横', pinyin: 'héng', quiz: '__线', meaning: '横线、横着'},
+                {word: '竖', pinyin: 'shù', quiz: '__立', meaning: '竖立、横竖'},
+                {word: '绳', pinyin: 'shéng', quiz: '__子', meaning: '绳子、跳绳'},
+                {word: '系', pinyin: 'jì', quiz: '__住', meaning: '系住、联系'},
+                {word: '蝇', pinyin: 'yíng', quiz: '苍__', meaning: '苍蝇、蝇子'},
+                {word: '证', pinyin: 'zhèng', quiz: '__明', meaning: '证明、证据'},
+                {word: '研', pinyin: 'yán', quiz: '__究', meaning: '研究、科研'},
+                {word: '究', pinyin: 'jiū', quiz: '研__', meaning: '研究、追究'},
+                {word: '驾', pinyin: 'jià', quiz: '__驶', meaning: '驾驶、驾车'},
+                {word: '驶', pinyin: 'shǐ', quiz: '驾__', meaning: '驾驶、行驶'},
+                {word: '唤', pinyin: 'huàn', quiz: '呼__', meaning: '呼唤、叫唤'},
+                {word: '纪', pinyin: 'jì', quiz: '世__', meaning: '世纪、纪念'},
+                {word: '技', pinyin: 'jì', quiz: '__术', meaning: '技术、技能'},
+                {word: '改', pinyin: 'gǎi', quiz: '__变', meaning: '改变、改正'},
+                {word: '程', pinyin: 'chéng', quiz: '__度', meaning: '程度、过程'},
+                {word: '超', pinyin: 'chāo', quiz: '__过', meaning: '超过、超常'},
+                {word: '亿', pinyin: 'yì', quiz: '__万', meaning: '亿万、亿元'},
+                {word: '核', pinyin: 'hé', quiz: '__心', meaning: '核心、核桃'},
+                {word: '奥', pinyin: 'ào', quiz: '__秘', meaning: '奥秘、奥运'},
+                {word: '益', pinyin: 'yì', quiz: '利__', meaning: '利益、有益'},
+                {word: '联', pinyin: 'lián', quiz: '__系', meaning: '联系、联合'},
+                {word: '质', pinyin: 'zhì', quiz: '__量', meaning: '质量、品质'},
+                {word: '哲', pinyin: 'zhé', quiz: '__学', meaning: '哲学、哲理'},
+                {word: '任', pinyin: 'rèn', quiz: '__何', meaning: '任何、任务'},
+                {word: '善', pinyin: 'shàn', quiz: '__良', meaning: '善良、善意'},
+                {word: '绢', pinyin: 'juàn', quiz: '手__', meaning: '手绢、丝绢'},
+                {word: '庇', pinyin: 'bì', quiz: '__护', meaning: '庇护、包庇'},
+                {word: '援', pinyin: 'yuán', quiz: '__助', meaning: '援助、支援'},
+                {word: '驼', pinyin: 'tuó', quiz: '骆__', meaning: '骆驼'},
+                {word: '幻', pinyin: 'huàn', quiz: '__想', meaning: '幻想、幻觉'},
+                {word: '幼', pinyin: 'yòu', quiz: '__儿', meaning: '幼儿、幼小'},
+                {word: '搏', pinyin: 'bó', quiz: '__斗', meaning: '搏斗、拼搏'},
+                {word: '霎', pinyin: 'shà', quiz: '__时', meaning: '霎时、霎那'},
+                {word: '填', pinyin: 'tián', quiz: '__空', meaning: '填空、填写'},
+                {word: '昧', pinyin: 'mèi', quiz: '冒__', meaning: '冒昧、愚昧'},
+                {word: '怀', pinyin: 'huái', quiz: '__念', meaning: '怀念、胸怀'},
+                {word: '谓', pinyin: 'wèi', quiz: '所__', meaning: '所谓、称谓'},
+                {word: '躯', pinyin: 'qū', quiz: '身__', meaning: '身躯、躯体'},
+                {word: '捐', pinyin: 'juān', quiz: '__献', meaning: '捐献、捐款'},
+                {word: '眶', pinyin: 'kuàng', quiz: '眼__', meaning: '眼眶、热眶'},
+                {word: '遵', pinyin: 'zūn', quiz: '__守', meaning: '遵守、遵从'},
+                {word: '循', pinyin: 'xún', quiz: '__环', meaning: '循环、遵循'},
+                {word: '荐', pinyin: 'jiàn', quiz: '推__', meaning: '推荐、举荐'},
+                {word: '痴', pinyin: 'chī', quiz: '__迷', meaning: '痴迷、痴心'},
+                {word: '锁', pinyin: 'suǒ', quiz: '__门', meaning: '锁门、上锁'},
+                {word: '钞', pinyin: 'chāo', quiz: '__票', meaning: '钞票、现钞'},
+                {word: '锅', pinyin: 'guō', quiz: '铁__', meaning: '铁锅、锅盖'},
+                {word: '盗', pinyin: 'dào', quiz: '__窃', meaning: '盗窃、盗贼'},
+                {word: '窃', pinyin: 'qiè', quiz: '偷__', meaning: '偷窃、窃取'},
+                {word: '斥', pinyin: 'chì', quiz: '__责', meaning: '斥责、排斥'},
+                {word: '肝', pinyin: 'gān', quiz: '__脏', meaning: '肝脏、心肝'},
+                {word: '脏', pinyin: 'zàng', quiz: '内__', meaning: '内脏、心脏'},
+                {word: '吉', pinyin: 'jí', quiz: '__祥', meaning: '吉祥、吉利'},
+                {word: '祥', pinyin: 'xiáng', quiz: '__和', meaning: '祥和、吉祥'},
+                {word: '徒', pinyin: 'tú', quiz: '__弟', meaning: '徒弟、师徒'},
+                {word: '纵', pinyin: 'zòng', quiz: '放__', meaning: '放纵、纵然'},
+                {word: '阶', pinyin: 'jiē', quiz: '台__', meaning: '台阶、阶梯'},
+                {word: '谱', pinyin: 'pǔ', quiz: '乐__', meaning: '乐谱、曲谱'},
+                {word: '盲', pinyin: 'máng', quiz: '__人', meaning: '盲人、盲区'},
+                {word: '纯', pinyin: 'chún', quiz: '__洁', meaning: '纯洁、纯白'},
+                {word: '键', pinyin: 'jiàn', quiz: '__盘', meaning: '键盘、按键'},
+                {word: '缕', pinyin: 'lǚ', quiz: '一__', meaning: '一缕、千丝万缕'},
+                {word: '恬', pinyin: 'tián', quiz: '__静', meaning: '恬静、恬淡'},
+                {word: '汹', pinyin: 'xiōng', quiz: '__涌', meaning: '汹涌、汹汹'},
+                {word: '涌', pinyin: 'yǒng', quiz: '__现', meaning: '涌现、涌出'},
+                {word: '湃', pinyin: 'pài', quiz: '澎__', meaning: '澎湃、汹涌澎湃'},
+                {word: '熄', pinyin: 'xī', quiz: '__灭', meaning: '熄灭、熄火'},
+                {word: '唉', pinyin: 'āi', quiz: '__声', meaning: '唉声叹气'},
+                {word: '淋', pinyin: 'lín', quiz: '__雨', meaning: '淋雨、湿淋'},
+                {word: '撕', pinyin: 'sī', quiz: '__开', meaning: '撕开、撕碎'},
+                {word: '霉', pinyin: 'méi', quiz: '倒__', meaning: '倒霉、发霉'},
+                {word: '勺', pinyin: 'sháo', quiz: '__子', meaning: '勺子、汤勺'},
+                {word: '皱', pinyin: 'zhòu', quiz: '__纹', meaning: '皱纹、皱眉'},
+                {word: '糟', pinyin: 'zāo', quiz: '__糕', meaning: '糟糕、糟了'},
+                {word: '嘛', pinyin: 'ma', quiz: '干__', meaning: '干嘛、就是嘛'},
+                {word: '概', pinyin: 'gài', quiz: '大__', meaning: '大概、概括'},
+                {word: '率', pinyin: 'lǜ', quiz: '概__', meaning: '概率、效率'},
+                {word: '沮', pinyin: 'jǔ', quiz: '__丧', meaning: '沮丧、沮丧'},
+                {word: '丧', pinyin: 'sàng', quiz: '__失', meaning: '丧失、丧气'},
+                {word: '逗', pinyin: 'dòu', quiz: '__乐', meaning: '逗乐、逗笑'},
+                {word: '搞', pinyin: 'gǎo', quiz: '__笑', meaning: '搞笑、搞事'},
+                {word: '态', pinyin: 'tài', quiz: '__度', meaning: '态度、形态'},
+                {word: '吨', pinyin: 'dūn', quiz: '__位', meaning: '吨位、吨数'},
+                {word: '恍', pinyin: 'huǎng', quiz: '__惚', meaning: '恍惚、恍然大悟'},
+                {word: '惚', pinyin: 'hū', quiz: '恍__', meaning: '恍惚'},
+                {word: '悟', pinyin: 'wù', quiz: '醒__', meaning: '醒悟、觉悟'},
+                {word: '怨', pinyin: 'yuàn', quiz: '抱__', meaning: '抱怨、埋怨'},
+                {word: '载', pinyin: 'zài', quiz: '__重', meaning: '载重、满载'},
+                {word: '著', pinyin: 'zhù', quiz: '__名', meaning: '著名、著作'},
+                {word: '愤', pinyin: 'fèn', quiz: '__怒', meaning: '愤怒、气愤'},
+                {word: '吻', pinyin: 'wěn', quiz: '亲__', meaning: '亲吻、吻合'},
+                {word: '恰', pinyin: 'qià', quiz: '__好', meaning: '恰好、恰当'},
+                {word: '缓', pinyin: 'huǎn', quiz: '__慢', meaning: '缓慢、缓和'},
+                {word: '措', pinyin: 'cuò', quiz: '__施', meaning: '措施、不知所措'},
+                {word: '腕', pinyin: 'wàn', quiz: '手__', meaning: '手腕、腕力'},
+                {word: '悯', pinyin: 'mǐn', quiz: '怜__', meaning: '怜悯、悯惜'},
+                {word: '泣', pinyin: 'qì', quiz: '哭__', meaning: '哭泣、泣不成声'},
+                {word: '凋', pinyin: 'diāo', quiz: '__谢', meaning: '凋谢、凋零'},
+                {word: '苞', pinyin: 'bāo', quiz: '花__', meaning: '花苞、含苞'},
+                {word: '谚', pinyin: 'yàn', quiz: '__语', meaning: '谚语、古谚'},
+                {word: '蕾', pinyin: 'lěi', quiz: '花__', meaning: '花蕾、花蕾初绽'},
+                {word: '蔗', pinyin: 'zhè', quiz: '甘__', meaning: '甘蔗、蔗糖'},
+                {word: '瀑', pinyin: 'pù', quiz: '__布', meaning: '瀑布、飞瀑'},
+                {word: '增', pinyin: 'zēng', quiz: '__加', meaning: '增加、增多'},
+                {word: '缝', pinyin: 'fèng', quiz: '__隙', meaning: '缝隙、裂缝'},
+                {word: '柿', pinyin: 'shì', quiz: '__子', meaning: '柿子、西红柿'},
+                {word: '袖', pinyin: 'xiù', quiz: '__子', meaning: '袖子、衣袖'},
+                {word: '坪', pinyin: 'píng', quiz: '草__', meaning: '草坪、坪地'},
+                {word: '鞭', pinyin: 'biān', quiz: '__炮', meaning: '鞭炮、鞭子'},
+                {word: '砖', pinyin: 'zhuān', quiz: '__头', meaning: '砖头、红砖'},
+                {word: '矿', pinyin: 'kuàng', quiz: '__产', meaning: '矿产、矿山'},
+                {word: '铝', pinyin: 'lǚ', quiz: '__合', meaning: '铝合金'}
+            ]
+        };;
+
+        // 全局变量
+        let currentGrade = '4';
+        let questionCount = 20;
+        let currentQuestions = [];
+        let currentIndex = 0;
+        let correctAnswers = 0;
+        let wrongAnswers = [];
+        let answered = false;
+
+        // 年级按钮点击事件
+        document.querySelectorAll('.grade-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.grade-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentGrade = this.dataset.grade;
+            });
+        });
+
+        // 题目数量选择
+        document.getElementById('questionCount').addEventListener('change', function() {
+            questionCount = parseInt(this.value);
+        });
+
+        // 开始练习
+        function startPractice() {
+            currentQuestions = getQuestions();
+            currentIndex = 0;
+            correctAnswers = 0;
+            wrongAnswers = [];
+            answered = false;
+
+            document.getElementById('welcomeArea').style.display = 'none';
+            document.getElementById('resultArea').classList.remove('active');
+            document.getElementById('practiceArea').classList.add('active');
+
+            showQuestion();
+        }
+
+        // 获取题目
+        function getQuestions() {
+            let allWords = [];
+
+            if (currentGrade === 'all') {
+                for (let grade in vocabularyData) {
+                    allWords = allWords.concat(vocabularyData[grade]);
+                }
+            } else {
+                for (let i = 1; i <= parseInt(currentGrade); i++) {
+                    if (vocabularyData[i]) {
+                        allWords = allWords.concat(vocabularyData[i]);
+                    }
+                }
+            }
+
+            allWords = shuffleArray(allWords);
+            return allWords.slice(0, Math.min(questionCount, allWords.length));
+        }
+
+        // 打乱数组
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // 渲染组词填空显示
+        function renderQuiz(quiz, word, revealClass) {
+            if (!quiz) return '';
+            const parts = quiz.split('__');
+            let html = '';
+            for (let i = 0; i < parts.length; i++) {
+                html += parts[i];
+                if (i < parts.length - 1) {
+                    if (revealClass) {
+                        html += '<span class="quiz-blank ' + revealClass + '" data-answer="' + word + '"></span>';
+                    } else {
+                        html += '<span class="quiz-blank"></span>';
+                    }
+                }
+            }
+            return html;
+        }
+
+        // 显示题目
+        function showQuestion() {
+            if (currentIndex >= currentQuestions.length) {
+                showResult();
+                return;
+            }
+
+            const question = currentQuestions[currentIndex];
+            answered = false;
+
+            // 更新进度
+            document.getElementById('currentNum').textContent = currentIndex + 1;
+            document.getElementById('totalNum').textContent = currentQuestions.length;
+            document.getElementById('progressFill').style.width =
+                ((currentIndex + 1) / currentQuestions.length * 100) + '%';
+
+            // 显示拼音
+            document.getElementById('pinyinDisplay').textContent = question.pinyin;
+
+            // 显示组词填空
+            document.getElementById('quizDisplay').innerHTML = renderQuiz(question.quiz, question.word);
+
+            // 清空输入框
+            const input = document.getElementById('answerInput');
+            input.value = '';
+            input.classList.remove('correct', 'wrong');
+            input.focus();
+
+            // 隐藏提示
+            document.getElementById('hintArea').classList.remove('show');
+        }
+
+        // 检查答案
+        function checkAnswer() {
+            if (answered) {
+                nextQuestion();
+                return;
+            }
+
+            const input = document.getElementById('answerInput');
+            const userAnswer = input.value.trim();
+            const correctAnswer = currentQuestions[currentIndex].word;
+
+            if (!userAnswer) {
+                input.focus();
+                return;
+            }
+
+            answered = true;
+
+            if (userAnswer === correctAnswer) {
+                // 答对了
+                input.classList.add('correct');
+                correctAnswers++;
+                showSuccessMessage();
+
+                // 在组词填空中显示正确答案
+                document.getElementById('quizDisplay').innerHTML =
+                    renderQuiz(currentQuestions[currentIndex].quiz, correctAnswer, 'revealed');
+
+                setTimeout(() => {
+                    nextQuestion();
+                }, 1500);
+            } else {
+                // 答错了
+                input.classList.add('wrong');
+                input.classList.add('shake');
+                setTimeout(() => input.classList.remove('shake'), 500);
+
+                wrongAnswers.push({
+                    word: correctAnswer,
+                    pinyin: currentQuestions[currentIndex].pinyin,
+                    quiz: currentQuestions[currentIndex].quiz,
+                    userAnswer: userAnswer
+                });
+
+                // 在组词填空中显示正确答案（红色）
+                document.getElementById('quizDisplay').innerHTML =
+                    renderQuiz(currentQuestions[currentIndex].quiz, correctAnswer, 'wrong-reveal');
+
+                // 显示正确答案
+                document.getElementById('hintText').textContent = '正确答案：' + correctAnswer;
+                const fullWord = currentQuestions[currentIndex].quiz.replace('__', correctAnswer);
+                document.getElementById('wordInfo').textContent =
+                    '完整词语：' + fullWord + '　' + (currentQuestions[currentIndex].meaning || '');
+                document.getElementById('hintArea').classList.add('show');
+            }
+        }
+
+        // 显示成功消息
+        function showSuccessMessage() {
+            const msg = document.getElementById('successMessage');
+            msg.classList.add('show');
+            setTimeout(() => {
+                msg.classList.remove('show');
+            }, 1000);
+        }
+
+        // 下一题
+        function nextQuestion() {
+            currentIndex++;
+            showQuestion();
+        }
+
+        // 跳过题目
+        function skipQuestion() {
+            if (!answered) {
+                wrongAnswers.push({
+                    word: currentQuestions[currentIndex].word,
+                    pinyin: currentQuestions[currentIndex].pinyin,
+                    quiz: currentQuestions[currentIndex].quiz,
+                    userAnswer: '(跳过)'
+                });
+
+                // 在组词填空中显示正确答案
+                document.getElementById('quizDisplay').innerHTML =
+                    renderQuiz(currentQuestions[currentIndex].quiz, currentQuestions[currentIndex].word, 'wrong-reveal');
+            }
+            nextQuestion();
+        }
+
+        // 显示提示
+        function showHint() {
+            const question = currentQuestions[currentIndex];
+            const fullWord = question.quiz.replace('__', question.word);
+            document.getElementById('hintText').textContent = '正确答案：' + question.word;
+            document.getElementById('wordInfo').textContent =
+                '完整词语：' + fullWord + '　' + (question.meaning || '');
+            document.getElementById('hintArea').classList.add('show');
+        }
+
+        // 显示结果
+        function showResult() {
+            document.getElementById('practiceArea').classList.remove('active');
+            document.getElementById('resultArea').classList.add('active');
+
+            const total = currentQuestions.length;
+            const score = Math.round(correctAnswers / total * 100);
+
+            document.getElementById('scoreDisplay').textContent = score;
+            document.getElementById('correctCount').textContent = correctAnswers;
+            document.getElementById('wrongCount').textContent = total - correctAnswers;
+            document.getElementById('accuracy').textContent = score + '%';
+
+            // 显示错题
+            const wrongList = document.getElementById('wrongWordsList');
+            if (wrongAnswers.length > 0) {
+                wrongList.innerHTML = wrongAnswers.map(w => {
+                    const fullWord = w.quiz ? w.quiz.replace('__', w.word) : w.word;
+                    return '<span class="wrong-word-item">' + w.word + '(' + w.pinyin + ') ' + fullWord + '</span>';
+                }).join('');
+                document.getElementById('wrongWordsArea').style.display = 'block';
+            } else {
+                wrongList.innerHTML = '<span style="color: #28a745;">太棒了！全部答对！🎉</span>';
+                document.getElementById('wrongWordsArea').style.display = 'block';
+            }
+        }
+
+        // 重新练习
+        function restartPractice() {
+            startPractice();
+        }
+
+        // 返回首页
+        function backToHome() {
+            document.getElementById('resultArea').classList.remove('active');
+            document.getElementById('practiceArea').classList.remove('active');
+            document.getElementById('welcomeArea').style.display = 'block';
+        }
+
+        // 键盘事件
+        document.getElementById('answerInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+    </script>
+</body>
+</html>
